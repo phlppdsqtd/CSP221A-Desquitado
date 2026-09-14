@@ -1,0 +1,264 @@
+square = lambda x: x ** 2
+print(square(5))   # 25
+
+add = lambda a, b: a + b
+print(add(3, 4))   # 7
+
+# square = lambda x: x ** 2 is functionally identical to:
+
+def square(x):
+    return x ** 2
+
+print("\n============================================================\n")
+
+students = [
+    {"name": "Amara", "grade": 92},
+    {"name": "Leo", "grade": 85},
+    {"name": "Priya", "grade": 78},
+]
+
+# lambda s: s["grade"]
+# s >> parameter
+# s["grade"] >> return/output
+
+# def get_grade(s):
+#     return s["grade"]
+
+by_grade = sorted(students, key=lambda s: s["grade"], reverse=True)
+print([s["name"] for s in by_grade])   # ['Amara', 'Leo', 'Priya']
+
+# var = sorted(sort_what, key=lambda_sort_function)
+
+print("\n============================================================\n")
+
+nums = [1, 2, 3, 4, 5]
+
+squared = list(map(lambda x: x ** 2, nums))
+print(squared)   # [1, 4, 9, 16, 25]
+
+evens = list(filter(lambda x: x % 2 == 0, nums))
+print(evens)     # [2, 4]
+
+# var = list(map(lambda_rule_function, data)
+# var = list(filter(lambda_rule_function, data)
+
+print("\n============================================================\n")
+
+# pip install pandas
+# dataframe >> like excel sheet / table
+
+# a quick preview — the full Pandas treatment is in Chapter 3
+import pandas as pd
+
+df = pd.DataFrame({"score": [55, 82, 91]})
+df["passed"] = df["score"].apply(lambda x: "Yes" if x >= 60 else "No")
+print(df)
+#    score passed
+# 0     55     No
+# 1     82    Yes
+# 2     91    Yes
+
+print("\n============================================================\n")
+
+import numpy as np
+
+a = np.array([1, 2, 3, 4])
+zeros = np.zeros(5)          # array([0., 0., 0., 0., 0.])
+ones = np.ones((2, 3))       # 2x3 array of ones >> 2 ROWS, 3 COLUMNS >> HEIGHT X WIDTH >> ROW X COLUMN
+rng = np.arange(0, 10, 2)    # array([0, 2, 4, 6, 8]) — like range(), but an array >> LAST DIGIT NOT INCLUDED
+rng2 = np.arange(0, 11, 2)    # 10 GETS INCLUDED
+lin = np.linspace(0, 1, 5)   # array([0., 0.25, 0.5, 0.75, 1.]) — 5 evenly spaced points
+
+print(zeros)
+print(ones)
+print(rng)
+print(rng2)
+print(lin)
+print(a.shape, a.dtype, a.ndim)   # (4,) int64 1
+
+# 1D array (Flat sequence)
+a = np.array([1, 2, 3, 4])
+print(a.shape)  # (4,)
+
+# 2D Row Vector (1 row, 4 columns)
+row = np.array([[1, 2, 3, 4]])
+print(row.shape)  # (1, 4)
+
+print("\n============================================================\n")
+
+grid = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+print(grid[1])       # [4 5 6] — second row
+print(grid[1, 2])    # 6 — row 1, column 2 >> ROW X COLUMN
+print(grid[:, 0])    # [1 4 7] — first column, all rows
+
+nums = np.array([10, 15, 20, 25, 30])
+mask = nums > 18
+print(mask)          # [False False True True True]
+print(nums[mask])    # [20 25 30] — boolean masking: keep only where the mask is True
+
+print("\n============================================================\n")
+
+flat = np.arange(6)
+print(flat)
+grid = flat.reshape(2, 3)
+print(grid)
+# [[0 1 2]
+#  [3 4 5]]
+
+# print(grid.tolist())
+# Output: [[0, 1, 2], [3, 4, 5]]
+
+# Standard Python lists print with commas separating the items.
+# However, NumPy specifically removes the commas and aligns the numbers with spaces when you use print()
+
+a = np.array([1, 2])
+b = np.array([3, 4])
+print(a)
+print(b)
+print(np.concatenate([a, b]))   # [1 2 3 4]
+print(np.stack([a, b]))         # [[1 2] [3 4]] — stacks as new rows
+
+print("\n============================================================\n")
+
+prices = np.array([10, 20, 30])
+print(prices * 1.1)   # [11. 22. 33.] — a scalar "broadcasts" across every element
+
+matrix = np.array([[1, 2, 3], [4, 5, 6]])
+row = np.array([10, 20, 30])
+print(matrix + row)
+# [[11 22 33]
+#  [14 25 36]] — row broadcasts across every row of the matrix
+# must be same dimension as number of columns (3,) or not exceed number of rows (2,3 max) >> (3,3) will be ValueErro
+
+matrix1 = np.array([[1, 2, 3], [4, 5, 6]])
+matrix2 = np.array([[10, 20, 30], [40, 50, 60]])
+print(matrix1 + matrix2)
+# [[11 22 33]
+#  [44 55 66]]
+# adds same row to same row, same column to same column
+
+print("\n============================================================\n")
+
+import numpy as np, time
+
+n = 2_000_000
+arr = np.arange(n)
+
+start = time.time()
+result = [x * 2 for x in arr]   # pure Python loop (via comprehension)
+loop_time = time.time() - start
+
+start = time.time()
+result = arr * 2                # vectorized NumPy
+vector_time = time.time() - start
+
+print(f"Loop: {loop_time:.4f}s, Vectorized: {vector_time:.4f}s")
+# Loop: ~0.3s, Vectorized: ~0.005s — vectorized is dramatically faster
+
+print("\n============================================================\n")
+
+data = np.array([[1, 2, 3], [4, 5, 6]])
+
+print(data.sum())          # 21 — sum of everything
+print(data.sum(axis=0))    # [5 7 9] — sum DOWN each column
+print(data.sum(axis=1))    # [6 15] — sum ACROSS each row
+print(data.mean())         # 3.5
+
+print(np.where(data > 3, "high", "low"))
+# [['low' 'low' 'low']
+#  ['high' 'high' 'high']]
+
+# AXIS = 0 >> COLUMN
+# AXIS = 1 >> ROW
+# previous (a,b): "ROW X COLUMN" >> IN AXIS, COLUMN FIRST THEN ROW
+
+print("\n============================================================\n")
+
+# Series >> single labeled column of data
+# DataFrame >> table
+
+import pandas as pd
+
+s = pd.Series([90, 85, 78], name="score")
+print(s)
+# 0    90
+# 1    85
+# 2    78
+# Name: score, dtype: int64
+
+df = pd.DataFrame({
+    "name": ["Amara", "Leo", "Priya"],
+    "score": [90, 85, 78],
+})
+print(df)
+#     name  score
+# 0  Amara     90
+# 1    Leo     85
+# 2  Priya     78
+
+print("\n============================================================\n")
+
+try:
+    df = pd.read_csv("students.csv")
+except FileNotFoundError:
+    print("Couldn't find students.csv — check the file path")
+
+print("\n============================================================\n")   
+
+df = pd.DataFrame({
+    "name": ["Amara", "Leo", "Priya", "Kenny", "Jen", "Beck"],
+    "score": [90, 85, 78, 66, 77, 88],
+})
+
+# df.head()       # first 5 rows
+# df.tail(3)      # last 3 rows
+# df.shape        # (rows, columns) tuple
+# df.columns      # column names
+# df.dtypes       # data type of each column
+# df.info()       # column names, types, and non-null counts in one summary
+# df.describe()   # count, mean, std, min/max, quartiles for numeric columns
+
+print(df.head())
+print(df.tail(3))
+print(df.shape)
+print(df.columns)
+print(df.dtypes)
+print(df.info())
+print(df.describe())
+
+print("\n============================================================\n") 
+
+# df["score"]              # a single column, returned as a Series
+# df[["name", "score"]]    # multiple columns, returned as a DataFrame
+# df.loc[0]                # row by LABEL (index value)
+# df.iloc[0]                # row by POSITION (0-based, like a list)
+# df.loc[0, "score"]       # a specific cell, by label
+# df[df["score"] >= 80]    # boolean filtering — same masking idea as NumPy
+
+print(df["score"] )
+print(df[["name", "score"]])
+print(df.loc[0])
+print(df.iloc[0])
+print(df.loc[0, "score"])
+print(df.iloc[0,1]) # ROW 0, COLUMN 1
+print(df[df["score"] >= 80])
+
+print("\n============================================================\n") 
+
+df = pd.DataFrame([
+    {"prompt": "Summarize this article", "completion": "The article discusses...", "quality": 0.9},
+    {"prompt": "Translate to French", "completion": "Bonjour", "quality": 0.4},
+    {"prompt": "Explain gravity", "completion": "Gravity is a force...", "quality": 0.85},
+])
+print(df.shape)   # (3, 3)
+
+corpus = pd.DataFrame({
+    "doc_id": [1, 2, 3],
+    "text": ["Short doc.", "A medium-length document about policies.", "A" * 3000],
+})
+corpus["length"] = corpus["text"].str.len()
+print(corpus["length"].describe())
+# tells you immediately if you have any documents way too long or too short to be useful chunks
+
+high_quality = df[df["quality"] >= 0.8]
+print(high_quality["prompt"].tolist())   # ['Summarize this article', 'Explain gravity']
