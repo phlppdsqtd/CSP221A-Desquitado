@@ -66,7 +66,7 @@ a = np.array([1, 2, 3, 4])
 zeros = np.zeros(5)          # array([0., 0., 0., 0., 0.])
 ones = np.ones((2, 3))       # 2x3 array of ones >> 2 ROWS, 3 COLUMNS >> HEIGHT X WIDTH >> ROW X COLUMN
 rng = np.arange(0, 10, 2)    # array([0, 2, 4, 6, 8]) — like range(), but an array >> LAST DIGIT NOT INCLUDED
-rng2 = np.arange(0, 11, 2)    # 10 GETS INCLUDED
+rng2 = np.arange(0, 11, 2)   # 10 GETS INCLUDED
 lin = np.linspace(0, 1, 5)   # array([0., 0.25, 0.5, 0.75, 1.]) — 5 evenly spaced points
 
 print(zeros)
@@ -128,7 +128,7 @@ row = np.array([10, 20, 30])
 print(matrix + row)
 # [[11 22 33]
 #  [14 25 36]] — row broadcasts across every row of the matrix
-# must be same dimension as number of columns (3,) or not exceed number of rows (2,3 max) >> (3,3) will be ValueErro
+# must be same dimension as number of columns (3,) or not exceed number of rows (2,3 max) >> (3,3) will be ValueError
 
 matrix1 = np.array([[1, 2, 3], [4, 5, 6]])
 matrix2 = np.array([[10, 20, 30], [40, 50, 60]])
@@ -231,7 +231,7 @@ print("\n============================================================\n")
 # df["score"]              # a single column, returned as a Series
 # df[["name", "score"]]    # multiple columns, returned as a DataFrame
 # df.loc[0]                # row by LABEL (index value)
-# df.iloc[0]                # row by POSITION (0-based, like a list)
+# df.iloc[0]               # row by POSITION (0-based, like a list)
 # df.loc[0, "score"]       # a specific cell, by label
 # df[df["score"] >= 80]    # boolean filtering — same masking idea as NumPy
 
@@ -262,3 +262,205 @@ print(corpus["length"].describe())
 
 high_quality = df[df["quality"] >= 0.8]
 print(high_quality["prompt"].tolist())   # ['Summarize this article', 'Explain gravity']
+
+print("\n============================================================\n") 
+
+# example only
+df = pd.DataFrame({
+    "name": ["  ALICE_SMITH ", "  ALICE_SMITH ", "bob_jones ", "CHARLIE_B", "  ALICE_SMITH ", "david_w"],
+    "score": ["90", "90", "85", "invalid", np.nan, "60"],
+    "signup_date": ["2023-01-01", "2023-01-01", "2023-02-15", "bad_date", "2023-04-10", np.nan],
+    "unused_column": ["x", "x", "y", "z", "w", "v"]
+})
+
+print(df.isna())          # a same-shaped DataFrame of True/False
+print(df.isna().sum())    # count of missing values PER COLUMN — the most useful first check
+
+print("\n============================================================\n")
+
+# example only
+df = pd.DataFrame({
+    "name": ["  ALICE_SMITH ", "  ALICE_SMITH ", "bob_jones ", "CHARLIE_B", "  ALICE_SMITH ", "david_w"],
+    "score": ["90", "90", "85", "invalid", np.nan, "60"],
+    "signup_date": ["2023-01-01", "2023-01-01", "2023-02-15", "bad_date", "2023-04-10", np.nan],
+    "unused_column": ["x", "x", "y", "z", "w", "v"]
+})
+
+# df.dropna()                              # drop any row with at least one missing value
+# df.dropna(subset=["score"])              # only drop rows missing THIS column
+# df.dropna(axis=1)                        # drop COLUMNS with any missing value instead of rows
+# df["score"].fillna(0)                    # replace missing values with a fixed value
+# df["score"].fillna(df["score"].mean())   # replace with the column's mean — very common
+# df["score"].ffill()                      # forward-fill: carry the last valid value forward
+
+print("\nEXAMPLE 1\n")
+print(df.dropna())                              # drop any row with at least one missing value
+
+print("\nEXAMPLE 2\n")
+print(df.dropna(subset=["score"]))              # only drop rows missing THIS column
+
+print("\nEXAMPLE 3\n")
+print(df.dropna(axis=1))                        # drop COLUMNS with any missing value instead of rows
+
+print("\nEXAMPLE 4\n")
+print(df["score"].fillna(0))                    # replace missing values with a fixed value
+
+# print("\nEXAMPLE 5\n")
+# print(df["score"] = df["score"].fillna(df["score"].mean()))   # replace with the column's mean — very common
+
+print("\nEXAMPLE 6\n")
+print(df["score"].ffill())                      # forward-fill: carry the last valid value forward
+
+print("\n============================================================\n")
+
+# example only
+df = pd.DataFrame({
+    "name": ["  ALICE_SMITH ", "  ALICE_SMITH ", "bob_jones ", "CHARLIE_B", "  ALICE_SMITH ", "david_w"],
+    "score": ["90", "90", "85", "invalid", np.nan, "60"],
+    "signup_date": ["2023-01-01", "2023-01-01", "2023-02-15", "bad_date", "2023-04-10", np.nan],
+    "unused_column": ["x", "x", "y", "z", "w", "v"]
+})
+
+# df.duplicated()                    # True/False per row — is this row a repeat of an earlier one?
+# df.duplicated().sum()              # count of duplicate rows
+# df.drop_duplicates()               # remove them, keeping the first occurrence by default
+# df.drop_duplicates(subset=["name"])  # only consider THIS column when deciding "duplicate"
+
+print(df.duplicated())                    # True/False per row — is this row a repeat of an earlier one?
+print(df.duplicated().sum())              # count of duplicate rows
+print(df.drop_duplicates())               # remove them, keeping the first occurrence by default
+print(df.drop_duplicates(subset=["name"]))  # only consider THIS column when deciding "duplicate"
+
+print("\n============================================================\n")
+
+# example only
+df = pd.DataFrame({
+    "name": ["  ALICE_SMITH ", "  ALICE_SMITH ", "bob_jones ", "CHARLIE_B", "  ALICE_SMITH ", "david_w"],
+    "score": ["90", "90", "85", "00", np.nan, "60"],
+    "signup_date": ["2023-01-01", "2023-01-01", "2023-02-15", "bad_date", "2023-04-10", np.nan],
+    "unused_column": ["x", "x", "y", "z", "w", "v"]
+})
+
+# did not test/show output anymore
+# df["score"] = df["score"].astype(float)
+# df["score"] = pd.to_numeric(df["score"], errors="coerce")   # invalid values become NaN, not a crash
+# df["signup_date"] = pd.to_datetime(df["signup_date"], errors="coerce")
+
+print("\n============================================================\n")
+
+# example only
+df = pd.DataFrame({
+    "nm": ["  ALICE_SMITH ", "  ALICE_SMITH ", "bob_jones ", "CHARLIE_B", "  ALICE_SMITH ", "david_w"],
+    "scr": ["90", "90", "85", "00", np.nan, "60"],
+    "signup_date": ["2023-01-01", "2023-01-01", "2023-02-15", "bad_date", "2023-04-10", np.nan],
+    "unused_column": ["x", "x", "y", "z", "w", "v"]
+})
+
+# did not test/show output anymore
+# df.rename(columns={"nm": "name", "scr": "score"})   # rename specific columns
+# df.columns = ["name", "score"]                       # or replace all column names at once
+# df.drop(columns=["unused_column"])                   # drop a column entirely
+
+print("\n============================================================\n")
+
+# example only
+df = pd.DataFrame({
+    "name": ["  ALICE_SMITH ", "  ALICE_SMITH ", "bob_jones ", "CHARLIE_B", "  ALICE_SMITH ", "david_w"],
+    "score": ["90", "90", "85", "00", np.nan, "60"],
+    "signup_date": ["2023-01-01", "2023-01-01", "2023-02-15", "bad_date", "2023-04-10", np.nan],
+    "unused_column": ["x", "x", "y", "z", "w", "v"]
+})
+
+# .apply() on a Series — runs a function on every value
+# df["passed"] = df["score"].apply(lambda x: "Yes" if x >= 60 else "No")
+
+# .map() on a Series — similar, often used for value substitution via a dict
+# grade_labels = {90: "A", 85: "B", 78: "C"}
+# df["letter"] = df["score"].map(grade_labels)
+
+# .apply() on a whole DataFrame with axis=1 — runs a function per ROW
+# df["summary"] = df.apply(lambda row: f"{row['name']}: {row['score']}", axis=1)
+
+# ----- CORRECT WAY -----
+
+# STEP 1: Convert score column from string to numeric (float)
+df["score"] = pd.to_numeric(df["score"], errors="coerce")
+
+# STEP 2: Fill missing values with 0 so calculations don't fail on NaN
+df["score_clean"] = df["score"].fillna(0)
+
+# STEP 3: Now apply() works because it compares numbers (e.g., 90.0 >= 60)
+df["passed"] = df["score_clean"].apply(lambda x: "Yes" if x >= 60 else "No")
+
+# STEP 4: Now map() works because score values (90.0) match numeric dictionary keys
+grade_labels = {90: "A", 85: "B", 78: "C"}
+df["letter"] = df["score_clean"].map(grade_labels)
+
+# STEP 5: Row-wise apply works naturally
+df["summary"] = df.apply(lambda row: f"{row['name'].strip()}: {row['score']}", axis=1)
+
+print(df[["name", "score", "passed", "letter", "summary"]])
+
+print("\n============================================================\n")
+
+# Chapter 5: Vectors & Similarity
+
+import numpy as np
+
+student_a = np.array([90, 85, 78])   # e.g., scores on 3 tests
+student_b = np.array([88, 80, 75])
+
+# 5.2 Basic Vector Operations
+print(student_a + student_b)   # [178 165 153] — elementwise addition
+print(student_a - student_b)   # [2 5 3]
+print(student_a * 2)           # [180 170 156] — scalar multiplication
+
+# 5.3 Dot Product
+dot = np.dot(student_a, student_b)
+print(dot)   # 90*88 + 85*80 + 78*75 = 20570
+
+# 5.4 Magnitude (Norm)
+magnitude = np.linalg.norm(student_a)
+print(magnitude)   # sqrt(90^2 + 85^2 + 78^2) ≈ 146.32
+
+# 5.5 Euclidean Distance
+distance = np.linalg.norm(student_a - student_b)
+print(distance)   # ≈ 6.16
+
+# 5.6 Cosine Similarity
+def cosine_similarity(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+print(cosine_similarity(student_a, student_b))   # ≈ 0.9998 — nearly identical direction
+
+# 5.7 The Practical Tool: scikit-learn
+from sklearn.metrics.pairwise import cosine_similarity
+vectors = np.array([student_a, student_b])
+print(cosine_similarity(vectors))
+# [[1.     0.9998...]
+#  [0.9998... 1.    ]] — a full similarity matrix, every vector compared to every other
+
+# 5.8 Semantic Search & RAG: Where This Math Actually Lives
+doc_vectors = np.array([
+    [0.02, -0.31, 0.88],   # "The cat sat on the mat"
+    [0.03, -0.29, 0.85],   # "A feline rested on the rug"
+    [-0.71, 0.44, -0.02],  # "Stock prices rose sharply"
+])
+doc_texts = ["The cat sat on the mat", "A feline rested on the rug", "Stock prices rose sharply"]
+query_vector = np.array([0.01, -0.30, 0.86])   # embedding of "Where did the cat rest?"
+similarities = cosine_similarity(doc_vectors, query_vector.reshape(1, -1)).flatten()
+best_match = doc_texts[np.argmax(similarities)]
+print(best_match)   # "The cat sat on the mat" — highest cosine similarity to the query
+
+print("\n============================================================\n")
+
+# Chapter 6: Train/Test Splitting
+
+from sklearn.model_selection import train_test_split
+import numpy as np
+X = np.arange(20).reshape(10, 2)              # 10 rows of "features"
+y = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1])  # 10 corresponding labels
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+print(X_train.shape, X_test.shape)   # (8, 2) (2, 2) — 80/20 split
