@@ -464,3 +464,30 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 print(X_train.shape, X_test.shape)   # (8, 2) (2, 2) — 80/20 split
+
+# Evaluating a fine-tuned model honestly — holding out examples the model never saw during fine-tuning, so accuracy numbers reflect real performance, not memorization
+examples = pd.DataFrame({
+    "prompt": [f"question {i}" for i in range(100)],
+    "label": [i % 2 for i in range(100)],
+})
+train_set, eval_set = train_test_split(examples, test_size=0.2, random_state=42)
+print(len(train_set), len(eval_set))   # 80 20 — fine-tune on train_set, score only on eval_set
+
+# Comparing prompt strategies fairly — running two approaches against the exact same held-out questions instead of eyeballing a handful of examples:
+_, eval_questions = train_test_split(examples, test_size=0.2, random_state=42)
+def score_strategy(strategy_fn, questions):
+    correct = sum(strategy_fn(q) == label for q, label in zip(questions["prompt"], questions["label"]))
+    return correct / len(questions)
+# both strategies get scored against the IDENTICAL eval_questions — a fair comparison
+# accuracy_a = score_strategy(strategy_a, eval_questions)
+# accuracy_b = score_strategy(strategy_b, eval_questions)
+
+# Building a labeled eval set for an LLM-based classifier — splitting hand-labeled examples before using train for few-shot examples and test purely for scoring:
+labeled_data = pd.DataFrame({
+    "text": [f"support ticket {i}" for i in range(50)],
+    "category": (["billing", "technical"] * 25),
+})
+few_shot_pool, scoring_set = train_test_split(
+    labeled_data, test_size=0.3, random_state=42, stratify=labeled_data["category"]
+)
+print(scoring_set["category"].value_counts())   # 8 billing, 7 technical — stratify preserves the original 50/50 proportion
